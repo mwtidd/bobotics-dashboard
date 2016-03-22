@@ -1,5 +1,5 @@
 {
-  "name": "bobotics-velocity-chart",
+  "name": "bobotics-dashboard",
   "version": "0.0.1",
   "authors": [
     "Michael Tidd <mwtidd@envisa.com>"
@@ -10,7 +10,7 @@
     "web-components",
     "polymer"
   ],
-  "main": "bobotics-velocity-chart.html",
+  "main": "bobotics-dashboard.html",
   "license": "http://polymer.github.io/LICENSE.txt",
   "homepage": "https://github.com/mwtidd/seed-element/",
   "ignore": [

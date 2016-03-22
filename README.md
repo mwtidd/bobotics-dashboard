@@ -1,4 +1,4 @@
-# bobotics-velocity-chart
+# bobotics-dashboard
 
 An element providing a starting point for other custom Polymer elements.
 
@@ -30,13 +30,13 @@ And you can run it via:
     polyserve -p 9090
 
 Once running, you can preview your element at
-`http://localhost:9090/components/bobotics-velocity-chart/`, where `bobotics-velocity-chart` is the name of the directory containing it.
+`http://localhost:9090/components/bobotics-dashboard/`, where `bobotics-dashboard` is the name of the directory containing it.
 
 
 ## Testing Your Element
 
 Simply navigate to the `/test` directory of your element to run its tests. If
-you are using Polyserve: `http://localhost:8080/components/bobotics-velocity-chart/test/`
+you are using Polyserve: `http://localhost:8080/components/bobotics-dashboard/test/`
 
 ### web-component-tester
 
