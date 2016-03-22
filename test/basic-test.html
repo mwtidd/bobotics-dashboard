@@ -17,17 +17,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../web-component-tester/browser.js"></script>
 
     <!-- Step 1: import the element to test -->
-    <link rel="import" href="../bobotics-velocity-chart.html">
+    <link rel="import" href="../bobotics-dashboard.html">
   </head>
   <body>
 
     <!-- You can use the document as a place to set up your fixtures. -->
-    <bobotics-velocity-chart></bobotics-velocity-chart>
+    <bobotics-dashboard></bobotics-dashboard>
 
     <script>
-      var myEl = document.querySelector('bobotics-velocity-chart');
+      var myEl = document.querySelector('bobotics-dashboard');
 
-      suite('<bobotics-velocity-chart>', function() {
+      suite('<bobotics-dashboard>', function() {
 
         test('check on our child', function() {
           assert.equal(myEl.ourChild, null);
