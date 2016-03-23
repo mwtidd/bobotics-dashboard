@@ -139,6 +139,7 @@ Example:
 
         connect: function(){
             this.set("ws", new WebSocket("ws://"+this.host+"/" + this.path));
+            this.ws.binaryType = "arraybuffer";
 
             this.ws.onopen = this.socketOpened.bind(this);
 

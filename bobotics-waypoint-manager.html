@@ -240,6 +240,9 @@ Example:
     },
 
     onChange: function(event){
+      if(this.sending){
+        return;
+      }
       var config = event.detail;
       this.set("drive", config);
     },
@@ -266,23 +269,24 @@ Example:
       this.splice("waypoints",this.waypoints.indexOf(event.model.waypoint),1);
     },
     initSend: function(){
+      var _waypoints = this.waypoints.slice(0);
       this.set("sending",true);
       if(this.status == "cloud-off"){
         var _interval = window.setInterval(function(){
           if(this.status == "cloud"){
-            this.send();
+            this.send(_waypoints);
             window.clearInterval(_interval);
           }
         }.bind(this), 500);
 
       }else{
-        this.send();
+        this.send(_waypoints);
       }
     },
 
-    send: function(){
-      var _waypoints = this.waypoints.slice(0);
-      this.$.waypointSocket.sendJson({"cachable":true,"waypoints": _waypoints});
+    send: function(waypoints){
+
+      this.$.waypointSocket.sendJson({"cachable":true,"waypoints": waypoints});
       this.set("sending",false);
     }
 

@@ -9,16 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="bobotics-socket.html">
 
-
-<link rel="import" href="bobotics-auto-manager.html">
-<link rel="import" href="bobotics-config-manager.html">
-<link rel="import" href="bobotics-waypoint-manager.html">
-<link rel="import" href="bobotics-vision-manager.html">
-<link rel="import" href="bobotics-vision-image.html">
-<link rel="import" href="bobotics-path.html">
-
-<link rel="import" href="../google-chart/google-chart.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-fab/paper-fab.html">
 <link rel="import" href="../paper-drawer-panel/paper-drawer-panel.html">
@@ -32,7 +24,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 
-
+<script src="../amcharts3/amcharts/amcharts.js"></script>
+<script src="../amcharts3/amcharts/serial.js"></script>
+<script src="../amcharts3/amcharts/xy.js"></script>
+<script src="../amcharts3/amcharts/themes/light.js"></script>
 
 <!--
 An element to start from.
@@ -41,11 +36,11 @@ An element to start from.
 
 Example:
 
-    <bobotics-dashboard></bobotics-dashboard>
+    <bobotics-vision-image></bobotics-vision-image>
 
 @demo
 -->
-<dom-module id="bobotics-dashboard">
+<dom-module id="bobotics-vision-image">
 
   <style is="custom-style">
     :host {
@@ -58,32 +53,14 @@ Example:
 
     }
 
-    :host ::content ::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    :host ::content ::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-    }
-
-    :host ::content ::-webkit-scrollbar-thumb {
-      border-radius: 5px;
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
-    }
-
     :host paper-card{
       margin: 16px;
       @apply(--layout-flex);
     }
 
     :host ::content #mainContent{
-       @apply(--layout-horizontal);
+       @apply(--layout-vertical);
      }
-
-    :host ::content #mainContent .column{
-      @apply(--layout-flex);
-      @apply(--layout-vertrical);
-    }
 
     :host ::content #drawerContent{
       @apply(--layout-vertical);
@@ -92,18 +69,6 @@ Example:
     :host ::content .card-actions{
       @apply(--layout-horizontal);
       @apply(--layout-center-center);
-    }
-
-    :host #hiddenChart{
-      width: 0;
-      height: 0;
-      opacity: 0;
-    }
-
-    :host google-chart{
-      @apply(--layout-flex);
-      width: auto;
-      height: auto;
     }
 
     :host #waypointList{
@@ -124,6 +89,12 @@ Example:
       @apply(--layout-flex);
     }
 
+    :host ::content #pathChart{
+      background: url('demo/field.png');
+      background-size: 100% 100%;
+      background-repeat:no-repeat;
+    }
+
     :host ::content .charts{
       @apply(--layout-vertical);
     }
@@ -132,47 +103,39 @@ Example:
       @apply(--layout-flex);
     }
 
-    :host ::content paper-card{
-      position: relative;
+    :host ::content .charts > paper-card > .card-content{
+      @apply(--layout-horizontal);
+    }
+
+    :host ::content .chart{
+      width: 50vw;
+      height: 50vw;
+    }
+
+    :host ::content #velocityCharts{
+      @apply(--layout-vertical);
+    }
+
+    :host ::content #velocityCharts .chart{
+      width: 50vw;
+      height: 25vw;
+    }
+
+    :host ::content #videoFeed{
+      @apply(--layout-flex);
     }
   </style>
 
   <template>
-    <bobotics-socket id="autoSocket" host$="[[server]]"></bobotics-socket>
-    <paper-drawer-panel drawer-width="300px" responsive-width="2000px" disable-swipe>
-      <paper-header-panel drawer>
-        <paper-toolbar><div>Settings</div></paper-toolbar>
-        <div id="drawerContent">
-          <paper-card>
-            <div class="card-content">
-              <paper-input label="server" value="{{server}}"></paper-input>
-            </div>
-            <div class="buttons"></div>
-          </paper-card>
+      <bobotics-socket id="socket" host$="[[server]]" path="vision/image"></bobotics-socket>
 
-        </div>
-      </paper-header-panel>
-      <paper-header-panel main>
-        <paper-toolbar>
-          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-          <div>Bobotics Dashboard</div>
-        </paper-toolbar>
-        <div id="mainContent">
-          <div class="column">
-            <bobotics-auto-manager class="card" server="[[server]]"></bobotics-auto-manager>
-            <bobotics-vision-manager class="card" server="[[server]]"></bobotics-vision-manager>
-            <bobotics-vision-image class="card" server="[[server]]"></bobotics-vision-image>
-            <bobotics-config-manager class="card" server="[[server]]"></bobotics-config-manager>
+      <div class="charts">
+        <paper-card heading="path map">
+          <div class="card-content">
+            <img id="videoFeed" src="{{src}}">
           </div>
-          <div class="column">
-            <bobotics-waypoint-manager class="card" server="[[server]]"></bobotics-waypoint-manager>
-            <bobotics-path class="card" server="[[server]]"></bobotics-path>
-          </div>
-        </div>
-      </paper-header-panel>
-    </paper-drawer-panel>
-
-
+        </paper-card>
+      </div>
     <content></content>
   </template>
 
@@ -182,10 +145,15 @@ Example:
 
   Polymer({
 
-    is: 'bobotics-dashboard',
+    is: 'bobotics-vision-image',
+
+    behaviors: [
+      Polymer.IronResizableBehavior
+    ],
 
     listeners: {
-
+      'socket.message-change': 'onChange',
+      "iron-resize" : "onResize"
     },
 
     properties: {
@@ -199,29 +167,6 @@ Example:
         type: Boolean,
         value: false
       },
-
-      timeChartData: {
-        type: Object,
-        value: function(){
-          return null;
-        }
-      },
-
-      posChartData: {
-        type: Object,
-        value: function(){
-          return null;
-        }
-      },
-
-
-
-      waypoints: {
-        type: Array,
-        value: function(){
-          return [{"x":0,"y":0,"theta":0},{"x":11,"y":0,"theta":0},{"x":21,"y":-9,"theta":-60}]
-        }
-      }
     },
 
     // Element Lifecycle
@@ -233,6 +178,7 @@ Example:
       //
       // This is the point where you should make modifications to the DOM (when
       // necessary), or kick off any processes the element wants to perform.
+      this.$.socket.connect();
     },
 
     attached: function() {
@@ -250,8 +196,29 @@ Example:
       //
       // Use this to clean up anything you did in `attached`.
     },
+
+    chartReady: function (){
+      this.set("isReady", true);
+    },
+
+    onChange: function(event){
+      var bytes = new Uint8Array(event.detail);
+      var data = "";
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; ++i) {
+        data += String.fromCharCode(bytes[i]);
+      }
+      this.set("src","data:image/jpeg;base64,"+window.btoa(data));
+    },
+
+
+
+
     saveRobot: function(){
       this;
+    },
+    onResize: function(){
+
     }
 
   });

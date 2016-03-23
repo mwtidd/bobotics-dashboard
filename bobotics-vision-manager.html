@@ -144,6 +144,13 @@ Example:
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
         <div>
+          <h3>Camera Settings</h3>
+          <paper-input label="exposure" value="{{config.camera.exposure}}"></paper-input>
+          <paper-input label="brightness" value="{{config.camera.brightness}}"></paper-input>
+          <paper-input label="contrast" value="{{config.camera.contrast}}"></paper-input>
+          <paper-input label="gain" value="{{config.camera.gain}}"></paper-input>
+        </div>
+        <div>
           <h3>Red Light</h3>
           <paper-input label="red min" value="{{config.redLight.redMin}}"></paper-input>
           <paper-input label="red max" value="{{config.redLight.redMax}}"></paper-input>
@@ -216,6 +223,13 @@ Example:
       sending: {
         type: Boolean,
         value: false
+      },
+
+      config: {
+        type: Object,
+        value: function(){
+          return null
+        }
       }
     },
 
@@ -262,36 +276,35 @@ Example:
     },
 
     onConfigChange: function(event){
+      if(this.sending){
+        return;
+      }
       var config = event.detail;
       this.set("config", config);
     },
 
 
 
-    config: {
-      type: Object,
-      value: function(){
-        return null
-      }
-    },
+
 
     sendConfig: function(){
+      var _config = this.config;
       this.set("sending", true);
       if(this.status == "cloud-off"){
         var _interval = window.setInterval(function(){
           if(this.status == "cloud"){
-            this.send();
+            this.send(_config);
             window.clearInterval(_interval);
           }
         }.bind(this), 500);
 
       }else{
-        this.send();
+        this.send(_config);
       }
     },
 
-    send: function(){
-      this.$.socket.sendJson(this.config);
+    send: function(config){
+      this.$.socket.sendJson(config);
       this.set("sending",false);
     }
 

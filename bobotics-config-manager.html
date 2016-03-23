@@ -246,27 +246,31 @@ Example:
     },
 
     onConfigChange: function(event){
+      if(this.sending){
+        return;
+      }
       var config = event.detail;
       this.set("drive", config);
     },
 
     initSend: function(){
+      var _drive = this.drive;
       this.set("sending",true);
       if(this.status == "cloud-off"){
         var _interval = window.setInterval(function(){
           if(this.status == "cloud"){
-            this.send();
+            this.send(_drive);
             window.clearInterval(_interval);
           }
         }.bind(this), 500);
 
       }else{
-        this.send();
+        this.send(_drive);
       }
     },
 
-    send: function(){
-      this.$.configSocket.sendJson(this.drive);
+    send: function(drive){
+      this.$.configSocket.sendJson(drive);
       this.set("sending",false);
     }
 

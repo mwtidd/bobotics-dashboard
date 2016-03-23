@@ -147,8 +147,22 @@ Example:
               <paper-item value="blue">Blue Team</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
+        <paper-dropdown-menu label="Starting Position">
+          <paper-listbox class="dropdown-content" selected="{{selectedAuto.selectedPosition}}" attr-for-selected="value" selected-attribute="active">
+            <template is="dom-repeat" items="{{autoPositions}}" as="position">
+              <paper-item value="[[position]]">[[position]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu label="Starting Defense">
+          <paper-listbox class="dropdown-content" selected="{{selectedAuto.selectedDefense}}" attr-for-selected="value" selected-attribute="active">
+            <template is="dom-repeat" items="{{autoDefenses}}" as="defense">
+              <paper-item value="[[defense]]">[[defense]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
         <paper-dropdown-menu label="Current Auto Mode">
-          <paper-listbox class="dropdown-content" selected="{{selectedMode}}" attr-for-selected="value" selected-attribute="active">
+          <paper-listbox class="dropdown-content" selected="{{selectedAuto.selectedMode}}" attr-for-selected="value" selected-attribute="active">
             <template is="dom-repeat" items="{{autoModes}}" as="mode">
               <paper-item value="[[mode]]">[[mode]]</paper-item>
             </template>
@@ -206,9 +220,25 @@ Example:
         }
       },
 
-      selectedMode: {
-        type: String,
-        value: null
+      autoPositions: {
+        type: Array,
+        value: function(){
+          return [];
+        }
+      },
+
+      autoDefenses: {
+        type: Array,
+        value: function(){
+          return [];
+        }
+      },
+
+      selectedAuto: {
+        type: Object,
+        value: function(){
+          return null;
+        }
       },
 
       selectedAlliance: {
@@ -257,21 +287,48 @@ Example:
     },
 
     onAutoChange: function(event){
+
+      if(this.sending){
+        return;
+      }
+
       var status = event.detail;
 
       if(status == "red"){
         this.set("selectedAlliance","red");
       }else if(status == "blue"){
         this.set("selectedAlliance","blue");
-      }else if(this.autoModes.indexOf(status) > -1){
-        this.set("selectedMode", event.detail);
-      }else if(status.modes && status.modes.length > 0){
+      }else if(status.selectedMode || status.selectedPosition){
+        this.set("selectedAuto", status);
+      }
+
+      if(status.modes && status.modes.length > 0){
         while(this.autoModes.length > 0){
           this.pop("autoModes");
         }
 
         status.modes.forEach(function(mode){
           this.push("autoModes", mode);
+        }, this);
+      }
+
+      if(status.positions && status.positions.length > 0){
+        while(this.autoPositions.length > 0){
+          this.pop("autoPositions");
+        }
+
+        status.positions.forEach(function(position){
+          this.push("autoPositions", position);
+        }, this);
+      }
+
+      if(status.defenses && status.defenses.length > 0){
+        while(this.autoDefenses.length > 0){
+          this.pop("autoDefenses");
+        }
+
+        status.defenses.forEach(function(defense){
+          this.push("autoDefenses", defense);
         }, this);
       }
     },
@@ -285,28 +342,23 @@ Example:
     },
 
     sendConfig: function(){
+      var _auto = this.selectedAuto;
       this.set("sending",true);
       if(this.status == "cloud-off"){
         var _interval = window.setInterval(function(){
           if(this.status == "cloud"){
-            this.sendAuto();
+            this.sendAuto(_auto);
             window.clearInterval(_interval);
           }
         }.bind(this), 500);
 
       }else{
-        this.sendAuto();
+        this.sendAuto(_auto);
       }
     },
 
-    sendAuto: function(){
-      if(this.selectedAlliance){
-        this.$.autoSocket.sendString(this.selectedAlliance);
-      }
-
-      if(this.selectedMode){
-        this.$.autoSocket.sendString(this.selectedMode);
-      }
+    sendAuto: function(selectedAuto){
+      this.$.autoSocket.sendJson(selectedAuto);
       this.set("sending",false);
     }
 
