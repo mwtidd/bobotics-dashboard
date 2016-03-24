@@ -133,6 +133,11 @@ Example:
       width: 62px;
     }
 
+    :host ::content .error{
+      font-weight: 500;
+      color: var(--paper-red-900)
+    }
+
 
   </style>
 
@@ -142,27 +147,27 @@ Example:
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
         <paper-dropdown-menu label="Current Alliance">
-          <paper-listbox class="dropdown-content" selected="{{selectedAlliance}}" attr-for-selected="value" selected-attribute="active">
+          <paper-listbox class="dropdown-content" selected="{{autoConfig.selectedAlliance}}" attr-for-selected="value" selected-attribute="active">
               <paper-item value="red">Red Team</paper-item>
               <paper-item value="blue">Blue Team</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu label="Starting Position">
-          <paper-listbox class="dropdown-content" selected="{{selectedAuto.selectedPosition}}" attr-for-selected="value" selected-attribute="active">
+          <paper-listbox class="dropdown-content" selected="{{autoConfig.selectedAuto.selectedPosition}}" attr-for-selected="value" selected-attribute="active">
             <template is="dom-repeat" items="{{autoPositions}}" as="position">
               <paper-item value="[[position]]">[[position]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu label="Starting Defense">
-          <paper-listbox class="dropdown-content" selected="{{selectedAuto.selectedDefense}}" attr-for-selected="value" selected-attribute="active">
+          <paper-listbox class="dropdown-content" selected="{{autoConfig.selectedAuto.selectedDefense}}" attr-for-selected="value" selected-attribute="active">
             <template is="dom-repeat" items="{{autoDefenses}}" as="defense">
               <paper-item value="[[defense]]">[[defense]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu label="Current Auto Mode">
-          <paper-listbox class="dropdown-content" selected="{{selectedAuto.selectedMode}}" attr-for-selected="value" selected-attribute="active">
+          <paper-listbox class="dropdown-content" selected="{{autoConfig.selectedAuto.selectedMode}}" attr-for-selected="value" selected-attribute="active">
             <template is="dom-repeat" items="{{autoModes}}" as="mode">
               <paper-item value="[[mode]]">[[mode]]</paper-item>
             </template>
@@ -170,7 +175,7 @@ Example:
         </paper-dropdown-menu>
       </div>
       <div class="card-actions">
-        <div class="flex"></div>
+        <div class="flex"><div class="error" hidden$="{{!error}}">This autonomous has not been defined...</div></div>
         <paper-spinner active$="{{sending}}"></paper-spinner>
         <paper-fab icon="backup" on-tap="sendConfig"></paper-fab>
       </div>
@@ -213,6 +218,11 @@ Example:
         value: false
       },
 
+      error: {
+        type: Boolean,
+        value: false
+      },
+
       autoModes: {
         type: Array,
         value: function(){
@@ -234,16 +244,11 @@ Example:
         }
       },
 
-      selectedAuto: {
+      autoConfig: {
         type: Object,
         value: function(){
           return null;
         }
-      },
-
-      selectedAlliance: {
-        type: String,
-        value: "red"
       },
 
       sending: {
@@ -294,12 +299,13 @@ Example:
 
       var status = event.detail;
 
-      if(status == "red"){
-        this.set("selectedAlliance","red");
-      }else if(status == "blue"){
-        this.set("selectedAlliance","blue");
-      }else if(status.selectedMode || status.selectedPosition){
-        this.set("selectedAuto", status);
+      if(status.type == "Undefined Auto"){
+        this.set("error", true);
+        return;
+      }
+
+      if(status.selectedAlliance){
+        this.set("autoConfig", status);
       }
 
       if(status.modes && status.modes.length > 0){
@@ -342,7 +348,8 @@ Example:
     },
 
     sendConfig: function(){
-      var _auto = this.selectedAuto;
+      this.set("error", false);
+      var _auto = this.autoConfig;
       this.set("sending",true);
       if(this.status == "cloud-off"){
         var _interval = window.setInterval(function(){
@@ -357,8 +364,10 @@ Example:
       }
     },
 
-    sendAuto: function(selectedAuto){
-      this.$.autoSocket.sendJson(selectedAuto);
+    sendAuto: function(auto){
+
+      this.$.autoSocket.sendJson(auto);
+
       this.set("sending",false);
     }
 

@@ -125,12 +125,10 @@ Example:
   <template>
       <bobotics-socket id="trajectorySocket" host$="[[server]]" path="trajectory"></bobotics-socket>
       <bobotics-socket id="trajectoryProgressSocket" host$="[[server]]" path="trajectory/progress"></bobotics-socket>
-      <bobotics-socket id="pathSocket" host$="[[server]]" path="path"></bobotics-socket>
 
       <div class="charts">
-        <paper-card heading="Charts">
+        <paper-card heading="velocity v time">
           <div class="card-content">
-            <div id="pathChart" class="chart"></div>
             <div id="velocityCharts">
               <div id="leftVelocity" class="chart"></div>
               <div id="rightVelocity" class="chart"></div>
@@ -157,7 +155,6 @@ Example:
     listeners: {
       'trajectorySocket.message-change': 'onTrajectoryChange',
       'trajectoryProgressSocket.message-change': 'onTrajectoryProgressChange',
-      'pathSocket.message-change': 'onPathChange',
       "iron-resize" : "onResize"
     },
 
@@ -206,7 +203,6 @@ Example:
       // necessary), or kick off any processes the element wants to perform.
       this.$.trajectorySocket.connect();
       this.$.trajectoryProgressSocket.connect();
-      this.$.pathSocket.connect();
     },
 
     attached: function() {
@@ -227,55 +223,6 @@ Example:
 
     chartReady: function (){
       this.set("isReady", true);
-    },
-
-    onPathChange: function(event){
-      var leftPath = event.detail.leftPoints;
-      var rightPath = event.detail.rightPoints;
-
-      var _points = new Array();
-
-      var totalTime = 0;
-      for(var i = 0; i < leftPath.length; i++){
-        var leftPoint = leftPath[i];
-        var rightPoint = rightPath[i];
-        _points.push({'ax': leftPoint.x, 'ay': leftPoint.y, 'bx': rightPoint.x, 'by': rightPoint.y});
-      }
-
-
-      this.pathChart = AmCharts.makeChart( "pathChart", {
-        "type": "xy",
-        "theme": "light",
-        "dataProvider": _points,
-        "valueAxes": [ {
-          "position": "bottom",
-          "dashLength": 1,
-          "id": "x",
-          "minimum": 0,
-          "maximum": 22
-        }, {
-          "dashLength": 1,
-          "position": "left",
-          "id": "y",
-          "minimum": -30,
-          "maximum": 0
-        } ],
-        "graphs": [ {
-          "balloonText": "x:[[x]] y:[[y]]",
-          "lineAlpha": 1,
-          "lineThickness": 3,
-          "xField": "ax",
-          "yField": "ay",
-          "lineColor": "#FF0000"
-        }, {
-          "balloonText": "x:[[x]] y:[[y]]",
-          "lineAlpha": 1,
-          "lineThickness": 3,
-          "xField": "bx",
-          "yField": "by",
-          "lineColor": "#FF0000"
-        } ]
-      } );
     },
 
     onTrajectoryProgressChange: function(event){

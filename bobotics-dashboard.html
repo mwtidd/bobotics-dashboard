@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bobotics-vision-manager.html">
 <link rel="import" href="bobotics-vision-image.html">
 <link rel="import" href="bobotics-path.html">
+<link rel="import" href="bobotics-velocity-chart.html">
 
 <link rel="import" href="../google-chart/google-chart.html">
 <link rel="import" href="../paper-input/paper-input.html">
@@ -32,7 +33,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 
-
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+<link rel="import" href="../paper-tabs/paper-tab.html">
+<link rel="import" href="../neon-animation/neon-animated-pages.html">
+<link rel="import" href="../neon-animation/neon-animatable.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
 
 <!--
 An element to start from.
@@ -56,6 +61,8 @@ Example:
       --paper-fab-background: var(--paper-indigo-500);
       --paper-fab-keyboard-focus-background: var(--paper-indigo-900);
 
+      --paper-tabs-selection-bar-color: var(--paper-indigo-500);
+
     }
 
     :host ::content ::-webkit-scrollbar {
@@ -77,8 +84,17 @@ Example:
     }
 
     :host ::content #mainContent{
-       @apply(--layout-horizontal);
+       @apply(--layout-vertical);
      }
+
+    :host ::content #mainContent neon-animated-pages{
+      @apply(--layout-flex);
+    }
+
+    :host ::content #mainContent neon-animatable{
+      @apply(--layout-flex);
+      @apply(--layout-horizontal);
+    }
 
     :host ::content #mainContent .column{
       @apply(--layout-flex);
@@ -135,6 +151,8 @@ Example:
     :host ::content paper-card{
       position: relative;
     }
+
+
   </style>
 
   <template>
@@ -158,16 +176,41 @@ Example:
           <div>Bobotics Dashboard</div>
         </paper-toolbar>
         <div id="mainContent">
-          <div class="column">
-            <bobotics-auto-manager class="card" server="[[server]]"></bobotics-auto-manager>
-            <bobotics-vision-manager class="card" server="[[server]]"></bobotics-vision-manager>
-            <bobotics-vision-image class="card" server="[[server]]"></bobotics-vision-image>
-            <bobotics-config-manager class="card" server="[[server]]"></bobotics-config-manager>
-          </div>
-          <div class="column">
-            <bobotics-waypoint-manager class="card" server="[[server]]"></bobotics-waypoint-manager>
-            <bobotics-path class="card" server="[[server]]"></bobotics-path>
-          </div>
+          <paper-tabs selected="{{selectedTab}}">
+            <paper-tab on-tap="enterLeft">Auto</paper-tab>
+            <paper-tab on-tap="enter">Vision</paper-tab>
+            <paper-tab on-tap="enterRight">Trajectory</paper-tab>
+          </paper-tabs>
+          <neon-animated-pages selected="{{selectedTab}}" entry-animation="{{entryAnimation}}"
+                               exit-animation="{{exitAnimation}}">
+            <neon-animatable>
+              <div class="column">
+                <bobotics-auto-manager class="card" server="[[server]]"></bobotics-auto-manager>
+              </div>
+              <div class="column">
+
+              </div>
+             </neon-animatable>
+            <neon-animatable>
+              <div class="column">
+                <bobotics-vision-manager class="card" server="[[server]]"></bobotics-vision-manager>
+              </div>
+              <div class="column">
+                <bobotics-vision-image class="card" server="[[server]]"></bobotics-vision-image>
+              </div>
+            </neon-animatable>
+            <neon-animatable>
+              <div class="column">
+                <bobotics-waypoint-manager class="card" server="[[server]]"></bobotics-waypoint-manager>
+                <bobotics-config-manager class="card" server="[[server]]"></bobotics-config-manager>
+              </div>
+              <div class="column">
+                <bobotics-path class="card" server="[[server]]"></bobotics-path>
+                <bobotics-velocity-chart class="card" server="[[server]]"></bobotics-velocity-chart>
+              </div>
+
+            </neon-animatable>
+          </neon-animated-pages>
         </div>
       </paper-header-panel>
     </paper-drawer-panel>
@@ -205,7 +248,7 @@ Example:
         value: function(){
           return null;
         }
-      },
+    },
 
       posChartData: {
         type: Object,
@@ -214,7 +257,20 @@ Example:
         }
       },
 
+      selectedTab: {
+        type: Number,
+        value: 0
+      },
 
+      entryAnimation: {
+        type: String,
+        value: "fade-in-animation"
+      },
+
+      exitAnimation: {
+        type: String,
+        value: "slide-right-animation"
+      },
 
       waypoints: {
         type: Array,
@@ -252,6 +308,24 @@ Example:
     },
     saveRobot: function(){
       this;
+    },
+
+    enterLeft: function(){
+      this.set("entryAnimation", "slide-from-left-animation");
+      this.set("exitAnimation", "slide-right-animation");
+    },
+
+    enterRight: function(){
+      this.set("entryAnimation", "slide-from-right-animation");
+      this.set("exitAnimation", "slide-left-animation");
+    },
+
+    enter: function(){
+      if(this.selectedTab == 0){
+        this.enterRight();
+      }else{
+        this.enterLeft();
+      }
     }
 
   });

@@ -243,8 +243,18 @@ Example:
       if(this.sending){
         return;
       }
-      var config = event.detail;
-      this.set("drive", config);
+      if(event.detail.waypoints){
+        while(this.waypoints.length > 0){
+          this.pop("waypoints");
+        }
+        event.detail.waypoints.forEach(function(waypoint){
+          this.push("waypoints", waypoint);
+        }, this);
+      }else{
+        var config = event.detail;
+        this.set("drive", config);
+      }
+
     },
 
     reconnect: function(){

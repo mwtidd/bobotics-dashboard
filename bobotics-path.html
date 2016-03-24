@@ -91,8 +91,15 @@ Example:
 
     :host ::content #pathChart{
       background: url('field.png');
-      background-size: 100% 100%;
-      background-repeat:no-repeat;
+      background-position: 25px 22px;
+      background-repeat: no-repeat;
+      height: 400px;
+      width: 400px;
+    }
+
+    :host ::content #pathChart svg{
+      margin-top: -10px;
+      margin-left: -10px;
     }
 
     :host ::content .charts{
@@ -216,17 +223,17 @@ Example:
         "theme": "light",
         "dataProvider": _points,
         "valueAxes": [ {
-          "position": "bottom",
+          "position": "top",
           "dashLength": 1,
           "id": "x",
           "minimum": 0,
-          "maximum": 22
+          "maximum": 25,
         }, {
           "dashLength": 1,
           "position": "left",
           "id": "y",
-          "minimum": -30,
-          "maximum": 0
+          "minimum": 0,
+          "maximum": -30,
         } ],
         "graphs": [ {
           "balloonText": "x:[[x]] y:[[y]]",
