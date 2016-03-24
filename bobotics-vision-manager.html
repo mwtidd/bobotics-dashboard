@@ -106,6 +106,9 @@ Example:
     :host ::content .charts > paper-card{
       @apply(--layout-flex);
     }
+    :host ::content paper-toggle-button{
+      margin: 8px 16px;
+    }
 
     :host #statusIcon{
       position: absolute;
@@ -151,6 +154,8 @@ Example:
     <paper-card id="lightSettings" heading="camera settings">
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
+        <div>
+        </div>
         <paper-tabs selected="{{selectedTab}}">
           <paper-tab on-tap="enterLeft">Camera</paper-tab>
           <paper-tab on-tap="enterRight">Color</paper-tab>
@@ -183,14 +188,12 @@ Example:
                   <paper-item value="3">Aperature</paper-item>
                 </paper-listbox>
               </paper-dropdown-menu>
-              <div>exposure</div>
               <paper-slider  value="{{config.camera.exposure}}" min="3" max="20147" step="1" editable></paper-slider>
-              <div>auto focus</div>
-              <paper-toggle-button checked="{{config.camera.focusAuto}}"></paper-toggle-button>
+              <paper-toggle-button checked="{{config.camera.focusAuto}}">auto focus</paper-toggle-button>
+
               <div>focus</div>
               <paper-slider  value="{{config.camera.focus}}" min="0" max="250" step="5" editable></paper-slider>
-              <div>filter image</div>
-              <paper-toggle-button checked="{{config.camera.filterImage}}"></paper-toggle-button>
+
             </div>
           </neon-animatable>
           <neon-animatable>
@@ -229,7 +232,7 @@ Example:
 
       </div>
       <div class="card-actions">
-        <div class="flex"></div>
+        <div class="flex"> <paper-toggle-button checked="{{config.camera.filterImage}}">filter image</paper-toggle-button></div>
         <paper-spinner active$="{{sending}}"></paper-spinner>
         <paper-fab icon="backup" on-tap="sendConfig"></paper-fab>
       </div>
