@@ -142,8 +142,8 @@ Example:
   </style>
 
   <template>
-    <bobotics-socket id="autoSocket" host$="[[server]]" path="auto"></bobotics-socket>
-    <paper-card id="robotSettings" heading="auto modes">
+    <bobotics-socket hidden id="autoSocket" host$="[[server]]" path="auto"></bobotics-socket>
+    <paper-card id="robotSettings">
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
         <paper-dropdown-menu label="Current Alliance">

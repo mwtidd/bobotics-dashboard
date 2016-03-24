@@ -123,11 +123,11 @@ Example:
   </style>
 
   <template>
-      <bobotics-socket id="trajectorySocket" host$="[[server]]" path="trajectory"></bobotics-socket>
-      <bobotics-socket id="trajectoryProgressSocket" host$="[[server]]" path="trajectory/progress"></bobotics-socket>
+      <bobotics-socket hidden id="trajectorySocket" host$="[[server]]" path="trajectory"></bobotics-socket>
+      <bobotics-socket hidden id="trajectoryProgressSocket" host$="[[server]]" path="trajectory/progress"></bobotics-socket>
 
       <div class="charts">
-        <paper-card heading="velocity v time">
+        <paper-card>
           <div class="card-content">
             <div id="velocityCharts">
               <div id="leftVelocity" class="chart"></div>

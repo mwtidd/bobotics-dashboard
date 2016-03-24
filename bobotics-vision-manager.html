@@ -91,7 +91,7 @@ Example:
       width: 100%;
     }
 
-    :host ::content paper-slider paper-input{
+    :host ::content .slider-input.paper-slider{
       width: 95px;
     }
 
@@ -128,7 +128,6 @@ Example:
 
     :host ::content #lightSettings .card-content .row{
       @apply(--layout-horizontal);
-      margin: 8px;
     }
 
     :host ::content #lightSettings .card-content .column{
@@ -149,12 +148,18 @@ Example:
   </style>
 
   <template>
-    <bobotics-socket id="socket" host$="[[server]]" path="vision/config"></bobotics-socket>
+    <bobotics-socket hidden id="socket" host$="[[server]]" path="vision/config"></bobotics-socket>
 
-    <paper-card id="lightSettings" heading="camera settings">
+    <paper-card id="lightSettings">
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
-        <div>
+        <div class="row">
+          <div class="column">
+            <paper-input label="min target size" value="{{config.camera.minTargetWidth}}"></paper-input>
+          </div>
+          <div class="column">
+            <paper-input label="max target size" value="{{config.camera.maxTargetWidth}}"></paper-input>
+          </div>
         </div>
         <paper-tabs selected="{{selectedTab}}">
           <paper-tab on-tap="enterLeft">Camera</paper-tab>
@@ -164,8 +169,7 @@ Example:
                              exit-animation="{{exitAnimation}}">
           <neon-animatable>
             <div class="column">
-              <h3>Camera Settings</h3>
-              <paper-input label="number" value="{{config.camera.number}}"></paper-input>
+              <paper-input label="camera number" value="{{config.camera.number}}"></paper-input>
               <div>brightness</div>
               <paper-slider  value="{{config.camera.brightness}}" min="0" max="255" step="1" editable></paper-slider>
               <div>contrast</div>
@@ -176,10 +180,10 @@ Example:
               <paper-slider  value="{{config.camera.gain}}" min="0" max="255" step="1" editable></paper-slider>
               <div>sharpness</div>
               <paper-slider  value="{{config.camera.sharpness}}" min="0" max="255" step="1" editable></paper-slider>
+
             </div>
 
             <div class="column">
-              <h3>Advanced Settings</h3>
               <paper-dropdown-menu label="auto exposure">
                 <paper-listbox class="dropdown-content" selected="{{config.camera.autoExposure}}" attr-for-selected="value" selected-attribute="active">
                   <paper-item value="0">Auto</paper-item>
@@ -193,7 +197,6 @@ Example:
 
               <div>focus</div>
               <paper-slider  value="{{config.camera.focus}}" min="0" max="250" step="5" editable></paper-slider>
-
             </div>
           </neon-animatable>
           <neon-animatable>

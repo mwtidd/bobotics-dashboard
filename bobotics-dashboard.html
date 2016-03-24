@@ -54,16 +54,26 @@ Example:
 
   <style is="custom-style">
     :host {
+      color: #333;
+
       @apply(--layout-vertical);
 
       font-family: Roboto;
 
       --paper-fab-background: var(--paper-indigo-500);
-      --paper-fab-keyboard-focus-background: var(--paper-indigo-900);
+      --paper-fab-keyboard-focus-background: var(--paper-orange-500);
 
-      --paper-tabs-selection-bar-color: var(--paper-indigo-500);
+      --paper-tabs-selection-bar-color: var(--paper-orange-500);
 
-      --paper-tab-ink: var(--paper-indigo-500);
+      --paper-tab-ink: var(--paper-orange-500);
+
+      --paper-tab: {
+        background: var(--paper-orange-100);
+      };
+    }
+
+    :host ::content paper-tabs #selectionBar{
+      z-index: 2;
     }
 
     :host ::content ::-webkit-scrollbar {
@@ -196,7 +206,7 @@ Example:
               <div class="column">
                 <bobotics-vision-manager class="card" server="[[server]]"></bobotics-vision-manager>
               </div>
-              <div class="column">
+              <div>
                 <bobotics-vision-image class="card" server="[[server]]"></bobotics-vision-image>
               </div>
             </neon-animatable>

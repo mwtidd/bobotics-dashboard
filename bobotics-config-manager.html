@@ -124,8 +124,8 @@ Example:
   </style>
 
   <template>
-    <bobotics-socket id="configSocket" host$="[[server]]" path="config"></bobotics-socket>
-    <paper-card id="robotSettings" heading="motion config">
+    <bobotics-socket hidden id="configSocket" host$="[[server]]" path="config"></bobotics-socket>
+    <paper-card id="robotSettings">
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
         <paper-input label="width" value="{{drive.width}}" hidden></paper-input>

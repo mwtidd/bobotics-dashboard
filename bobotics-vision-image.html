@@ -128,10 +128,10 @@ Example:
   </style>
 
   <template>
-      <bobotics-socket id="socket" host$="[[server]]" path="vision/image"></bobotics-socket>
+      <bobotics-socket hidden id="socket" host$="[[server]]" path="vision/image"></bobotics-socket>
 
       <div class="charts">
-        <paper-card heading="video feed">
+        <paper-card>
           <div class="card-content">
             <img id="videoFeed" src="{{src}}">
           </div>
