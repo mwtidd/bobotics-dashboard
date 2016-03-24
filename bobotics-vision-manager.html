@@ -28,6 +28,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-slider/paper-slider.html">
+<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
 
 
 
@@ -85,18 +87,12 @@ Example:
       height: auto;
     }
 
-    :host #waypointList{
-
+    :host ::content paper-slider{
+      width: 100%;
     }
 
-    :host .waypoint{
-      @apply(--layout-horizontal);
-      @apply(--layout-center-center);
-    }
-
-    :host .waypoint > paper-input{
-      @apply(--layout-flex);
-      margin: 0 8px;
+    :host ::content paper-slider paper-input{
+      width: 95px;
     }
 
     :host .actions .flex{
@@ -118,14 +114,26 @@ Example:
       z-index: 2;
     }
 
-    :host ::content #lightSettings .card-content{
-      @apply(--layout-horizontal);
+    :host ::content neon-animated-pages{
+      overflow: hidden;
     }
 
-    :host ::content #lightSettings .card-content > div{
-      @apply(--layout-flex);
+    :host ::content #lightSettings .card-content{
+      @apply(--layout-vertical);
+      height: 400px;
+    }
+
+    :host ::content #lightSettings .card-content .row{
+      @apply(--layout-horizontal);
       margin: 8px;
     }
+
+    :host ::content #lightSettings .card-content .column{
+      @apply(--layout-vertical);
+      margin: 8px;
+    }
+
+
 
     :host ::content paper-spinner{
       position: absolute;
@@ -143,32 +151,82 @@ Example:
     <paper-card id="lightSettings" heading="camera settings">
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
-        <div>
-          <h3>Camera Settings</h3>
-          <paper-input label="exposure" value="{{config.camera.exposure}}"></paper-input>
-          <paper-input label="brightness" value="{{config.camera.brightness}}"></paper-input>
-          <paper-input label="contrast" value="{{config.camera.contrast}}"></paper-input>
-          <paper-input label="gain" value="{{config.camera.gain}}"></paper-input>
-          <paper-input label="hue" value="{{config.camera.hue}}"></paper-input>
-        </div>
-        <div>
-          <h3>Red Light</h3>
-          <paper-input label="red min" value="{{config.redLight.redMin}}"></paper-input>
-          <paper-input label="red max" value="{{config.redLight.redMax}}"></paper-input>
-          <paper-input label="green min" value="{{config.redLight.greenMin}}"></paper-input>
-          <paper-input label="green max" value="{{config.redLight.greenMax}}"></paper-input>
-          <paper-input label="blue min" value="{{config.redLight.blueMin}}"></paper-input>
-          <paper-input label="blue max" value="{{config.redLight.blueMax}}"></paper-input>
-        </div>
-        <div>
-          <h3>Blue Light</h3>
-          <paper-input label="red min" value="{{config.blueLight.redMin}}"></paper-input>
-          <paper-input label="red max" value="{{config.blueLight.redMax}}"></paper-input>
-          <paper-input label="green min" value="{{config.blueLight.greenMin}}"></paper-input>
-          <paper-input label="green max" value="{{config.blueLight.greenMax}}"></paper-input>
-          <paper-input label="blue min" value="{{config.blueLight.blueMin}}"></paper-input>
-          <paper-input label="blue max" value="{{config.blueLight.blueMax}}"></paper-input>
-        </div>
+        <paper-tabs selected="{{selectedTab}}">
+          <paper-tab on-tap="enterLeft">Camera</paper-tab>
+          <paper-tab on-tap="enterRight">Color</paper-tab>
+        </paper-tabs>
+        <neon-animated-pages selected="{{selectedTab}}" entry-animation="{{entryAnimation}}"
+                             exit-animation="{{exitAnimation}}">
+          <neon-animatable>
+            <div class="column">
+              <h3>Camera Settings</h3>
+              <paper-input label="number" value="{{config.camera.number}}"></paper-input>
+              <div>brightness</div>
+              <paper-slider  value="{{config.camera.brightness}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>contrast</div>
+              <paper-slider  value="{{config.camera.contrast}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>saturation</div>
+              <paper-slider  value="{{config.camera.saturation}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>gain</div>
+              <paper-slider  value="{{config.camera.gain}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>sharpness</div>
+              <paper-slider  value="{{config.camera.sharpness}}" min="0" max="255" step="1" editable></paper-slider>
+            </div>
+
+            <div class="column">
+              <h3>Advanced Settings</h3>
+              <paper-dropdown-menu label="auto exposure">
+                <paper-listbox class="dropdown-content" selected="{{config.camera.autoExposure}}" attr-for-selected="value" selected-attribute="active">
+                  <paper-item value="0">Auto</paper-item>
+                  <paper-item value="1">Manual</paper-item>
+                  <paper-item value="2">Shutter</paper-item>
+                  <paper-item value="3">Aperature</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <div>exposure</div>
+              <paper-slider  value="{{config.camera.exposure}}" min="3" max="20147" step="1" editable></paper-slider>
+              <div>auto focus</div>
+              <paper-toggle-button checked="{{config.camera.focusAuto}}"></paper-toggle-button>
+              <div>focus</div>
+              <paper-slider  value="{{config.camera.focus}}" min="0" max="250" step="5" editable></paper-slider>
+              <div>filter image</div>
+              <paper-toggle-button checked="{{config.camera.filterImage}}"></paper-toggle-button>
+            </div>
+          </neon-animatable>
+          <neon-animatable>
+            <div class="column">
+              <h3>Red Light</h3>
+              <div>red min</div>
+              <paper-slider  value="{{config.redLight.redMin}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>red max</div>
+              <paper-slider  value="{{config.redLight.redMax}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>green min</div>
+              <paper-slider  value="{{config.redLight.greenMin}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>green max</div>
+              <paper-slider  value="{{config.redLight.greenMax}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>blue min</div>
+              <paper-slider  value="{{config.redLight.redMin}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>blue max</div>
+              <paper-slider  value="{{config.redLight.blueMax}}" min="0" max="255" step="1" editable></paper-slider>
+            </div>
+            <div class="column">
+              <h3>Blue Light</h3>
+              <div>red min</div>
+              <paper-slider  value="{{config.blueLight.redMin}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>red max</div>
+              <paper-slider  value="{{config.blueLight.redMax}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>green min</div>
+              <paper-slider  value="{{config.blueLight.greenMin}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>green max</div>
+              <paper-slider  value="{{config.blueLight.greenMax}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>blue min</div>
+              <paper-slider  value="{{config.blueLight.redMin}}" min="0" max="255" step="1" editable></paper-slider>
+              <div>blue max</div>
+              <paper-slider  value="{{config.blueLight.blueMax}}" min="0" max="255" step="1" editable></paper-slider>
+            </div>
+          </neon-animatable>
+        </neon-animated-pages>
+
       </div>
       <div class="card-actions">
         <div class="flex"></div>
@@ -231,6 +289,20 @@ Example:
         value: function(){
           return null
         }
+      },
+      selectedTab: {
+        type: Number,
+        value: 0
+      },
+
+      entryAnimation: {
+        type: String,
+        value: "fade-in-animation"
+      },
+
+      exitAnimation: {
+        type: String,
+        value: "slide-right-animation"
       }
     },
 
@@ -307,7 +379,17 @@ Example:
     send: function(config){
       this.$.socket.sendJson(config);
       this.set("sending",false);
-    }
+    },
+
+    enterLeft: function(){
+      this.set("entryAnimation", "slide-from-left-animation");
+      this.set("exitAnimation", "slide-right-animation");
+    },
+
+    enterRight: function(){
+      this.set("entryAnimation", "slide-from-right-animation");
+      this.set("exitAnimation", "slide-left-animation");
+    },
 
   });
 

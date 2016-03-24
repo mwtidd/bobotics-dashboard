@@ -45,6 +45,13 @@ Example:
                 value: false
             },
 
+            reconnectTimeout: {
+                type: Object,
+                value: function(){
+                    return null;
+                }
+            },
+
             socketOpen: {
                 type: Boolean,
                 value: false
@@ -241,7 +248,10 @@ Example:
         },
 
         socketError: function(){
-            window.setTimeout(function(){
+            if(this.reconnectTimeout){
+                window.clearInterval(this.reconnectTimeout);
+            }
+            this.reconnectTimeout = window.setTimeout(function(){
                 this.connect();
             }.bind(this), 500);
             this.set("socketOpen", false);
