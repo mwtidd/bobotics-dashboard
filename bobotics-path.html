@@ -16,6 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
@@ -97,9 +98,19 @@ Example:
       width: 400px;
     }
 
+    :host ::content #pathChart.spybot{
+      background: url('field_sb.png');
+      background-position: 37px 22px;
+      background-repeat: no-repeat;
+    }
+
     :host ::content #pathChart svg{
       margin-top: -10px;
       margin-left: -10px;
+    }
+
+    :host ::content #pathChart a, :host ::content #pathChart image{
+      display: none !important;
     }
 
     :host ::content .charts{
@@ -135,7 +146,11 @@ Example:
       <div class="charts">
         <paper-card>
           <div class="card-content">
-            <div id="pathChart" class="chart"></div>
+            <div id="pathChart" class$="chart {{showSpybotChart(spybot)}}"></div>
+          </div>
+          <div class="card-actions">
+            <paper-checkbox checked="{{spybot}}">Spybot</paper-checkbox>
+            <div class="flex"></div>
           </div>
         </paper-card>
       </div>
@@ -170,6 +185,11 @@ Example:
         type: Boolean,
         value: false
       },
+
+      spybot: {
+        type: Boolean,
+        value: false
+      },
     },
 
     // Element Lifecycle
@@ -198,6 +218,14 @@ Example:
       // removed from a document.
       //
       // Use this to clean up anything you did in `attached`.
+    },
+
+    showSpybotChart: function(spybot){
+      if(spybot){
+        return "spybot";
+      }else{
+        return "";
+      }
     },
 
     chartReady: function (){
@@ -261,6 +289,36 @@ Example:
     },
     onResize: function(){
 
+    },
+
+    download: function(event){
+      if (!window.BlobBuilder && window.WebKitBlobBuilder) {
+        window.BlobBuilder = window.WebKitBlobBuilder;
+      }
+
+      fs.root.getFile(filename, {
+        create: true
+      }, function (fileEntry) {
+
+        // Create a FileWriter object for our FileEntry (log.txt).
+        fileEntry.createWriter(function (fileWriter) {
+
+          fileWriter.onwriteend = function (e) {
+            console.log('Write completed.');
+          };
+
+          fileWriter.onerror = function (e) {
+            console.log('Write failed: ' + e.toString());
+          };
+
+          var builder = new BlobBuilder();
+          builder.append(data);
+          var blob = builder.getBlob();
+          fileWriter.write(blob);
+
+        }, errorHandler);
+
+      }, errorHandler);
     }
 
   });

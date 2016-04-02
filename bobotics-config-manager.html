@@ -128,11 +128,13 @@ Example:
     <paper-card id="robotSettings">
       <paper-icon-button id="statusIcon" on-tap="reconnect" icon="[[status]]"></paper-icon-button>
       <div class="card-content">
-        <paper-input label="width" value="{{drive.width}}" hidden></paper-input>
-        <paper-input label="dt" value="{{drive.dt}}"></paper-input>
+        <paper-input label="wheel diameter (in)" value="{{drive.wheelDiameter}}"></paper-input>
+        <paper-input label="gear ratio" value="{{drive.gearRatio}}"></paper-input>
+        <paper-input label="width (ft)" value="{{drive.width}}"></paper-input>
+        <paper-input label="dt (sec)" value="{{drive.dt}}"></paper-input>
         <paper-input label="max acc" value="{{drive.acc}}"></paper-input>
         <paper-input label="max jerk" value="{{drive.jerk}}"></paper-input>
-        <paper-input label="max vel" value="{{drive.vel}}"></paper-input>
+        <paper-input label="max vel (ft/sec)" value="{{drive.vel}}"></paper-input>
         <!--
         <h3>left config</h3>
         <paper-input label="f" value="{{drive.leftConfig.f}}"></paper-input>
@@ -193,7 +195,7 @@ Example:
       drive: {
         type: Object,
         value: function(){
-          return {"dt":.02,"acc":4,"jerk":4,"vel":4}
+          return {"dt":.01,"acc":4,"jerk":4,"vel":6, "width": 1.9375, "wheelDiameter": 5.875, gearRatio: 1.57}
         }
       },
 

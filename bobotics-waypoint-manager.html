@@ -296,7 +296,7 @@ Example:
 
     send: function(waypoints){
 
-      this.$.waypointSocket.sendJson({"__class":"com.team319.waypoint.WaypointList","cachable":true,"waypoints": waypoints});
+      this.$.waypointSocket.sendJson({"cachable":true,"waypoints": waypoints});
       this.set("sending",false);
     }
 

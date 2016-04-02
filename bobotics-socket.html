@@ -251,9 +251,11 @@ Example:
             if(this.reconnectTimeout){
                 window.clearInterval(this.reconnectTimeout);
             }
-            this.reconnectTimeout = window.setTimeout(function(){
-                this.connect();
-            }.bind(this), 500);
+            if(!this.socketOpen){
+                this.reconnectTimeout = window.setTimeout(function(){
+                    this.connect();
+                }.bind(this), 500);
+            }
             this.set("socketOpen", false);
             this.fire("error");
         }
